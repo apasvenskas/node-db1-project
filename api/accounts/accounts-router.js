@@ -12,10 +12,10 @@ router.get('/', async (req, res, next) => {
 })
 
 router.get('/:id', md.checkAccountId, async (req, res, next) => {
-  try{
+  try {
     const account = await Account.getById(req.params.id)
     res.json(account)
-  } catch (err){
+  } catch(err){
     next(err)
   }
 })
@@ -24,25 +24,31 @@ router.post(
   '/', 
   md.checkAccountPayload,
   md.checkAccountNameUnique, 
- (req, res, next) => {
+ async (req, res, next) => {
   try{
-    res.json('get accounts')
+    const newAccount = await Account.create({
+      name: req.body.name.trim(), 
+      budget: req.body.budget,
+    })
+    res.status(201).json(newAccount)
   } catch (err){
     next(err)
   }
 })
 
-router.put('/:id', md.checkAccountId, (req, res, next) => {
+router.put('/:id', md.checkAccountId, md.checkAccountPayload, async (req, res, next) => {
   try{
-    res.json('get accounts')
+    const update = await Account.updateById(req.params.id, req.body)
+    res.json(update)
   } catch (err){
     next(err)
   }
 });
 
-router.delete('/:id', md.checkAccountId, (req, res, next) => {
+router.delete('/:id', md.checkAccountId, async (req, res, next) => {
   try{
-    res.json('get accounts')
+    await Account.deleteById(req.params.id)
+    res.json(req.account)
   } catch (err){
     next(err)
   }
